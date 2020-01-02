@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html>
+ <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta name="full-screen" content="yes">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link rel="shortcut icon" href="./static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./static/css/style.css">
+    <script src="./static/js/j.js"></script>
+    <title>中华传统色</title>
+  </head>
+  <body class=''>
+      <div id="main">
+<div class="all-body" id='allbody' :a='bkImg'>
+  <div class="bkshow" :class="{show:isShowToggle,hide:!isShowToggle}" :style="{background:bkImg[0]}"></div>
+  <div class="bkshow" :class="{show:!isShowToggle,hide:isShowToggle}" :style="{background:bkImg[1]}"></div>
+  <div class="main-content">
+    <div class="header">
+      <img src="./static/images/logo.icon.png" alt="">
+      <span> <img class="logo" src="./static/images/logo.png" alt=""></span>
+    </div>
+    <div class="div flex mob-fix cir-div"v-if='isMob'>
+      <div class="flex-item" :key='item+showData.color' v-for='(item,i) in showData.cmyk'>
+        <div class="inner">
+          <line-vue :is-row='!isRow' :progress='getCmykR(item)'></line-vue>
+          <div class="row">
+            <div class="col cfff">
+              {{cmykStr[i]}}
+            </div>
+            <div class="col">
+              <div class="cir">
+                <cir-div :show-str='!0' class="progress cfff" key="animation-model" :width="width" :radius="radius"
+                  :id='item' :progress="getCmykR(item)" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="line-row mob-fix" v-if='isMob'>
+      <div v-for='(rgb,i) in showData.rgb' :key='i'>
+        <div class="line-show-all cfff" :data-progress='getRgbR(rgb)' :data-before='rgbStr[i]' :data-after='rgb'>
+          <line-vue class="middle" :is-row='!isRow' :progress='getRgbR(rgb)'></line-vue>
+        </div>
+      </div>
+    </div>
+    <div class="row flex" id='allBodyContent' ref='$allBodyContent':style="{height:allBodyContentHeight+'px'}">
+
+      <div class="right right-body" ref='$rightBody'>
+        <div class="div flex mob-fix cir-div" v-if='!isMob'>
+          <div class="flex-item" :key='item+showData.color' v-for='(item,i) in showData.cmyk'>
+            <div class="inner">
+              <line-vue :is-row='!isRow' :progress='getCmykR(item)'></line-vue>
+              <div class="row">
+                <div class="col cfff">
+                  {{cmykStr[i]}}
+                </div>
+                <div class="col">
+                  <div class="cir">
+                    <cir-div :show-str='!0' class="progress cfff" key="animation-model" :width="width" :radius="radius"
+                      :id='item' :progress="getCmykR(item)" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="line-row mob-fix" v-if='!isMob'>
+          <div v-for='(rgb,i) in showData.rgb' :key='i'>
+            <div class="line-show-all cfff" :data-progress='getRgbR(rgb)' :data-before='rgbStr[i]' :data-after='rgb'>
+              <line-vue class="middle" :is-row='!isRow' :progress='getRgbR(rgb)'></line-vue>
+            </div>
+          </div>
+        </div>
+        <div class="row mob-phone">
+          <div class="title font-hyccs col fs60">
+            {{showData.title}}
+          </div>
+          <div class="div col mob-show">
+            <img :style="{maxHeight:imgMaxHeight+'px'}" src="./static/images/mob.png" alt="">
+          </div>
+        </div>
+        <div class="right info">
+          <p>Inspired By Nipponcolors,Powered by Vue.js</p>
+          <p> Designed by Zon Zhang in 2019</p>
+          <p>Github Link is here</p>
+        </div>
+      </div>
+      <!-- minHeight:minHeight+'px', -->
+      <div class="left mob-left" :style="{paddingTop:colorHeight+'px',backgroundColor:colorFix?'#fff':''}">
+        <div class="color1"  id='color1' :class="{show:isShowToggle,hide:!isShowToggle,'mob-fix':colorFix}" :style="{backgroundColor:'rgba(255,255,255,'+colorRadio+')',backgroundImage:bkImgSelect[0],height:colorHeight+'px',top:colorTop+'px'}"></div>
+        <div class="color1"  id='color2'  :class="{show:!isShowToggle,hide:isShowToggle,'mob-fix':colorFix}" :style="{backgroundColor:'rgba(255,255,255,'+colorRadio+')',backgroundImage:bkImgSelect[1],height:colorHeight+'px',top:colorTop+'px'}"></div>
+        <div class="list row flex flex-list">
+          <div class="item col" @click='showNewData(item)' :key='item.color' :id='item.color' v-for='item in list'>
+            <div class="inner-item">
+                <p class="color tar">{{item.color}}</p>
+                <span class="show-color" :style="{background: item.color}"></span>
+                <div class="row show-info">
+                  <div class="col font font-hyccs">
+                    {{item.title}}
+                  </div>
+                  <div class="col cir">
+                    <cir-div v-for='cmyk in item.cmyk' class="progress cfff" :key="item.cmyk.join('')+'-'+cmyk" :id="item.cmyk.join('')+'-'+cmyk" :width="swidth"
+                      :radius="sradius" :id='cmyk' :progress="getCmykR(cmyk)"></cir-div>
+                  </div>
+                  <div class="col line h100">
+                    <div class="row h100">
+                      <div class="col h100" v-for='rgb in item.rgb'>
+                        <line-vue :progress='getRgbR(rgb)' />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<script type='vue/tem' id='cir'>
+  <div :class="{'show-num':showStr}" :data-pro='progress'>
+      <svg style="transform: rotate(-90deg)" :width="width" :height="width" xmlns="http://www.w3.org/2000/svg">
+        <circle :r="(width-radius)/2"
+          :cy="width/2"
+          :cx="width/2"
+          :stroke-width="radius"
+          :stroke="backgroundColor"
+          fill="none"
+        />
+        <circle ref="$bar"
+          :r="(width-radius)/2"
+          :cy="width/2"
+          :cx="width/2"
+          :stroke="barColor"
+          :stroke-width="radius"
+          :stroke-linecap="isRound ? 'round' : 'square'"
+          :stroke-dasharray="(width-radius)*3.14"
+          :stroke-dashoffset="isAnimation ? (width-radius) * 3.14 : (width - radius) * 3.14 * (100 - progress) / 100"
+          fill="none"
+        />
+      </svg>
+    </div>
+</script>
+<script>
+  Vue.component('cir-div', {
+    template: document.querySelector('#cir').innerHTML,
+    props: {
+      width: [Number, String], // 圆的大小
+      radius: [Number, String], // 进度条厚度
+      progress: [Number, String], // 进度条百分比
+      barColor: { // 是否是动画效果
+        type: String,
+        default: '#fff',
+      },  // 进度条颜色
+      backgroundColor: { // 是否是动画效果
+        type: String,
+        default: 'rgba(0,0,0,.21)',
+      }, // 背景颜色
+      isAnimation: { // 是否是动画效果
+        type: Boolean,
+        default: true,
+      },
+      isRound: { // 是否是圆形画笔
+        type: Boolean,
+        default: true,
+      },
+      id: { // 组件的id，多组件共存时使用
+        type: [String, Number],
+        default: 1,
+      },
+      duration: { // 整个动画时长
+        type: [String, Number],
+        default: 1000,
+      },
+      delay: { // 延迟多久执行
+        type: [String, Number],
+        default: 200,
+      },
+      timeFunction: { // 动画缓动函数
+        type: String,
+        default: 'cubic-bezier(0.99, 0.01, 0.22, 0.94)',
+      },
+      showStr:{
+        type:Boolean,
+        default:false
+      }
+    },
+    data: {
+      idStr: 'circle_progress_keyframes_' + this.id,
+      isHas: false
+    },
+    beforeDestroy() {
+      // 清除旧组件的样式标签
+      if(window[this.idStr]&&!window[this.idStr].hasMore){
+        document.getElementById(this.idStr) && document.getElementById(this.idStr).remove()
+      }else if(window[this.idStr]){
+        window[this.idStr].hasMore-=1
+      }
+    },
+    created() {
+      this.idStr = 'circle_progress_keyframes_' + this.id
+      this.radius = this.radius || 20
+    },
+    watch:{
+      progress :function(to,from){
+      
+        this.init()
+      }
+    },
+    mounted() {
+      this.init()
+    },methods:{
+      init:function(){
+        if (this.isAnimation) {
+        // 重复定义判断
+        if (document.getElementById(this.idStr)) {
+          console.warn('vue-circle-progress should not have same id style')
+          document.getElementById(this.idStr).remove()
+        }
+        // 生成动画样式文件
+        if (!window[this.idStr]) {
+          let style = document.createElement('style')
+          style.id = this.idStr
+          style.type = 'text/css'
+          style.innerHTML = `
+        @keyframes circle_progress_keyframes_name_${this.id} {
+          from {stroke-dashoffset: ${(this.width - this.radius) * 3.14}px;}
+          to {stroke-dashoffset: ${(this.width - this.radius) * 3.14 * (100 - this.progress) / 100}px;}}
+          .circle_progress_bar${this.id} {animation: circle_progress_keyframes_name_${this.id} ${this.duration}ms ${this.delay}ms ${this.timeFunction} forwards;}`
+          // 添加新样式文件
+          document.getElementsByTagName('head')[0].appendChild(style)
+          // 往svg元素中添加动画class
+          this.$refs.$bar.classList.add(`circle_progress_bar${this.id}`)
+        }else{
+          this.isHas=true
+          window[this.idStr].hasMore=(window[this.idStr].hasMore||0)+1
+        }
+      }
+      }
+    }
+  })
+</script>
+<script type='vue/tem' id='line-vue'>
+  <div  class='line-vue' ref='$bar'  :class="[isRow?'r':'h']">
+      
+  </div>
+</script>
+<script>
+Vue.component('line-vue', {
+  template: document.querySelector('#line-vue').innerHTML,
+  props: {
+    progress: [Number, String], // 进度条百分比
+    isRow: { // 是否是动画效果
+      type: Boolean,
+      default: false,
+    }
+  },
+  data: {
+    inited:false,
+    idStr: 'isrow' + this.id
+  },
+  beforeDestroy() {
+    // 清除旧组件的样式标签
+    document.getElementById(this.idStr) && document.getElementById(this.idStr).remove()
+  },
+  created() {
+    this.idStr = 'isrow' + this.id
+  },
+  watch:{
+    progress:function(){
+      if(this.inited){
+        this.init()
+      }
+    }
+  },
+  mounted() {
+    var that=this
+    this.$nextTick(function(){
+      that.init()
+    })
+  },
+  methods:{
+    init:function(){
+      var that=this
+    setTimeout(function(){
+      if(that.$refs.$bar){
+        if(that.isRow){
+          that.$refs.$bar.style.width=that.progress+'%'
+        }else{
+          that.$refs.$bar.style.height=that.progress+'%'
+        }
+        that.inited=true
+      }
+    },500)
+    }
+  }
+})
+</script>
+<script>
+  var mobW=750
+  // 这些是数据，添加数据即可展示
+  var dataJson = [
+   {
+      color: '#ef5b9c',
+      title: '踯躅色'
+    },
+    {
+      color: '#feeeed',
+      title: '樱色'
+    },
+    {
+      color: '#f05b72',
+      title: '蔷薇色'
+    },
+    {
+      color: '#f15b6c',
+      title: '韩红'
+    },
+    {
+      color: '#f8aba6',
+      title: '珊瑚色'
+    },
+    {
+      color: '#f69c9f',
+      title: '红梅色'
+    },
+    {
+      color: '#f58f98',
+      title: '桃色'
+    },
+    {
+      color: '#ca8687',
+      title: '薄柿'
+    },
+    {
+      color: '#f391a9',
+      title: '薄红梅'
+    },
+    {
+      color: '#bd6758',
+      title: '曙色'
+    },
+    {
+      color: '#d71345',
+      title: '红色'
+    },
+    {
+      color: '#d64f44',
+      title: '赤丹'
+    },
+    {
+      color: '#d93a49',
+      title: '红赤'
+    },
+    {
+      color: '#b3424a',
+      title: '胭脂色'
+    },
+    {
+      color: '#c76968',
+      title: '真赭'
+    },
+    {
+      color: '#bb505d',
+      title: '今漾色'
+    },
+    {
+      color: '#987165',
+      title: '梅染'
+    },
+  ]
+  dataJson.forEach(v => {
+    let c=w3color(v.color)
+    v.rgb = [c.red,c.green,c.blue]
+    v.cmyk = [Math.round(c.cyan * 100),Math.round(c.magenta* 100),Math.round(c.yellow* 100),Math.round(c.black* 100)]
+  })
+  new Vue({
+    el: '#allbody',
+    data: {
+      minHeight: 0,
+      imgMaxHeight:300,
+      colorRadio:0,
+      isShowToggle: 1,
+      bkImg: ['linear-gradient(rgba(240, 91, 114, 1),rgba(240, 91, 114, .5))', 'linear-gradient(rgba(240, 91, 114, 1),rgba(240, 91, 114, .5))'],
+      bkImgSelect:['linear-gradient(rgba(240, 91, 114, 1),rgba(240, 91, 114, .5))', 'linear-gradient(rgba(240, 91, 114, 1),rgba(240, 91, 114, .5))'],
+      message: 'Hello Vue.js!',
+      list: dataJson,
+      swidth: 20,
+      sradius: 4,
+      width: 50,
+      radius: 5,
+      progress: 70,
+      lprogress: 70,
+      isRow: !1,
+      cmykStr: ['C', 'M', 'Y', 'K'],
+      rgbStr: ['R', 'G', 'B'],
+      showData: {
+        cmyk: [44, 55, 66, 99],
+        rgb: [23, 111, 222],
+        title: '丑出色'
+      },
+      colorFix:false,
+      isMob:window.innerWidth<=mobW,
+      innerHeight:window.innerHeight
+    },
+    created(){
+      this.showNewData(dataJson[0])
+      this.showNewData(dataJson[0])
+    },
+    mounted() {
+      var that=this
+      this.isShowToggle = 1
+      // this.minHeight = this.$refs.$rightBody.offsetHeight
+      this.imgMaxHeight=window.innerHeight-(95+48+101+57+20+50)
+      window.onresize=function(){
+        that.isMob=window.innerWidth<=mobW
+        that.innerHeight=window.innerHeight
+        that.imgMaxHeight=window.innerHeight-(95+48+101+57+20+50)
+        if(!that.isMob){
+          that.colorFix=false
+        }
+      }
+      this.$refs.$allBodyContent.addEventListener('scroll',function(e){
+        // console.log(e.target.scrollTop,that.colorHeight)
+        if(e.target.scrollTop>=that.colorHeight-1){
+          that.colorFix=true
+        }else{
+          that.colorFix=false
+          that.colorRadio=e.target.scrollTop/that.colorHeight
+        }
+      },false)
+    },
+    computed:{
+      colorHeight(){
+        return !this.isMob?0:this.innerHeight-240+8
+      },
+      colorTop(){
+        return this.colorFix?240 -8:this.colorHeight
+      },
+      allBodyContentHeight(){
+      return  this.isMob?this.colorHeight:this.innerHeight-105
+      }
+    },
+    methods: {
+      getRgbR: function (i) {
+        return parseInt(i / 255 * 100)
+      },
+      getCmykR: function (i) {
+        return parseInt(i / 100 * 100)
+      },
+      showNewData: function (item) {
+        var that = this
+        that.bkImg[that.isShowToggle] = 'linear-gradient(rgba(' + item.rgb.join(',') + ',1),rgba('+item.rgb.join(',')+', 0.5))'
+        that.bkImgSelect[that.isShowToggle] = 'linear-gradient(rgba(' + item.rgb.join(',') + ',0.85),rgba('+item.rgb.join(',')+', 0.5))'
+        that.isShowToggle = +!that.isShowToggle
+        this.showData = item
+      }
+    }
+  })
+</script>
+<!-- footer -->
+      
+    </div>
+  </body>
+</html>
